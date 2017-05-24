@@ -1,5 +1,5 @@
-*/config/development
 */logs/*
 */cache/*
 .idea/*
 */config/database.php
+*/config/config.ini
