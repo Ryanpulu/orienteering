@@ -133,7 +133,9 @@ class CI_DB_pdo_driver extends CI_DB {
 
 		try
 		{
-			return new PDO($this->dsn, $this->username, $this->password, $this->options);
+			$pdoObj =  new PDO($this->dsn, $this->username, $this->password, $this->options);
+			$pdoObj->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);   //设置关闭本地预处理
+			return $pdoObj;
 		}
 		catch (PDOException $e)
 		{

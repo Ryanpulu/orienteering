@@ -47,14 +47,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @link		https://codeigniter.com/user_guide/libraries/config.html
  */
 class CI_Model {
-
+    public $cache;
 	/**
 	 * Class constructor
 	 *
 	 * @return	void
 	 */
-	public function __construct()
+	public function __construct(CI_Cache &$cache)
 	{
+	    $this->cache = $cache;
 		log_message('info', 'Model Class Initialized');
 	}
 

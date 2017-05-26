@@ -3,3 +3,4 @@
 .idea/*
 */config/database.php
 */config/config.toml
+*project.txt
