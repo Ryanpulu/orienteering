@@ -78,4 +78,11 @@ class CI_Model {
 		return get_instance()->$key;
 	}
 
+    /**
+     * @return string
+     * @used-by assemble redis key
+     */
+    public final static function getRedisKey($curClassName,$curMethodName){
+	    return $curClassName.'>'.$curMethodName;
+    }
 }

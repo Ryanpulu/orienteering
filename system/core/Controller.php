@@ -95,10 +95,4 @@ class CI_Controller {
 	{
 		return self::$instance;
 	}
-	public final static function getRedisKey($curClassName=__CLASS__,$curFuncName=__FUNCTION__){
-        return $curClassName.'_'.$curFuncName;
-    }
-    public static function getTestName(){
-	    return self::getRedisKey();
-    }
 }

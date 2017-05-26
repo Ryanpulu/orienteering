@@ -390,7 +390,7 @@ class CI_Config {
     //加载配置文件
     public static function getConf(CI_Controller $CI_Con,CI_Cache $cache){
 	    if(!self::$ConfFlag){
-            $redisKey = $CI_Con::getRedisKey(__CLASS__,__FUNCTION__);
+            $redisKey = RED_CONF_KEY;
             $_conf = $cache->redis->get($redisKey);
             if(!$_conf){
                 $_conf = self::loadConfToml($CI_Con);//解析toml配置文件

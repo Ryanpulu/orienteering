@@ -11,5 +11,6 @@ class Test_model extends CI_Model {
     {
         parent::__construct($cache);
     }
+
 }
 
