@@ -390,7 +390,6 @@ class CI_Config {
     //加载配置文件
     public static function getConf(CI_Controller $CI_Con,CI_Cache $cache){
 	    if(!self::$ConfFlag){
-	        echo "加载了一次啊";
             $redisKey = $CI_Con::getRedisKey(__CLASS__,__FUNCTION__);
             $_conf = $cache->redis->get($redisKey);
             if(!$_conf){
