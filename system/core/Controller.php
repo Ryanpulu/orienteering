@@ -56,8 +56,8 @@ class CI_Controller {
 	 *
 	 * @var	object
 	 */
-	private static $instance;
-
+    public static $instance;
+    //public static $ConfFlag = false;
 	/**
 	 * Class constructor
 	 *
@@ -65,8 +65,8 @@ class CI_Controller {
 	 */
 	public function __construct()
 	{
+	    //$shd = $this->getControllerObj();
 		self::$instance =& $this;
-
 		// Assign all the class objects that were instantiated by the
 		// bootstrap file (CodeIgniter.php) to local class variables
 		// so that CI can run as one big super object.
@@ -78,6 +78,9 @@ class CI_Controller {
 		$this->load =& load_class('Loader', 'core');
 		$this->load->initialize();
 		log_message('info', 'Controller Class Initialized');
+
+        $this->load->driver('cache');
+        CI_Config::getConf(self::$instance,$this->cache);
 	}
 
 	// --------------------------------------------------------------------
@@ -92,5 +95,7 @@ class CI_Controller {
 	{
 		return self::$instance;
 	}
-
+	final static function getRedisKey($curClassName,$curFuncName){
+        return $curClassName.'_'.$curFuncName;
+    }
 }

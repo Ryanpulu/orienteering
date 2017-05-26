@@ -716,6 +716,7 @@ class CI_Loader {
 	 */
 	public function driver($library, $params = NULL, $object_name = NULL)
 	{
+	    //echo "good";
 		if (is_array($library))
 		{
 			foreach ($library as $key => $value)
@@ -749,7 +750,6 @@ class CI_Loader {
 		{
 			$library = ucfirst($library).'/'.$library;
 		}
-
 		return $this->library($library, $params, $object_name);
 	}
 
@@ -1009,11 +1009,12 @@ class CI_Loader {
 	 */
 	protected function _ci_load_library($class, $params = NULL, $object_name = NULL)
 	{
+
 		// Get the class name, and while we're at it trim any slashes.
 		// The directory path can be included as part of the class name,
 		// but we don't want a leading slash
 		$class = str_replace('.php', '', trim($class, '/'));
-
+        //echo $class;
 		// Was the path included with the class name?
 		// We look for a slash to determine this
 		if (($last_slash = strrpos($class, '/')) !== FALSE)
@@ -1029,11 +1030,10 @@ class CI_Loader {
 			$subdir = '';
 		}
 
-		$class = ucfirst($class);
-
 		// Is this a stock library? There are a few special conditions if so ...
 		if (file_exists(BASEPATH.'libraries/'.$subdir.$class.'.php'))
 		{
+		    //echo "good";
 			return $this->_ci_load_stock_library($class, $subdir, $params, $object_name);
 		}
 
@@ -1104,7 +1104,6 @@ class CI_Loader {
 	protected function _ci_load_stock_library($library_name, $file_path, $params, $object_name)
 	{
 		$prefix = 'CI_';
-
 		if (class_exists($prefix.$library_name, FALSE))
 		{
 			if (class_exists(config_item('subclass_prefix').$library_name, FALSE))
@@ -1132,9 +1131,9 @@ class CI_Loader {
 		array_pop($paths); // BASEPATH
 		array_pop($paths); // APPPATH (needs to be the first path checked)
 		array_unshift($paths, APPPATH);
-
 		foreach ($paths as $path)
 		{
+            //echo $path.'libraries/'.$file_path.$library_name.'.php';
 			if (file_exists($path = $path.'libraries/'.$file_path.$library_name.'.php'))
 			{
 				// Override
@@ -1149,11 +1148,12 @@ class CI_Loader {
 				}
 			}
 		}
-
+        //echo BASEPATH.'libraries/'.$file_path.$library_name.'.php';
 		include_once(BASEPATH.'libraries/'.$file_path.$library_name.'.php');
-
+        //echo BASEPATH.'libraries/'.$file_path.$library_name.'.php';
 		// Check for extensions
 		$subclass = config_item('subclass_prefix').$library_name;
+
 		foreach ($paths as $path)
 		{
 			if (file_exists($path = $path.'libraries/'.$file_path.$subclass.'.php'))
@@ -1170,7 +1170,6 @@ class CI_Loader {
 				}
 			}
 		}
-
 		return $this->_ci_init_library($library_name, $prefix, $params, $object_name);
 	}
 
@@ -1193,6 +1192,7 @@ class CI_Loader {
 	 */
 	protected function _ci_init_library($class, $prefix, $config = FALSE, $object_name = NULL)
 	{
+
 		// Is there an associated config file for this class? Note: these should always be lowercase
 		if ($config === NULL)
 		{
@@ -1252,7 +1252,9 @@ class CI_Loader {
 		// Was a custom class name supplied? If so we'll use it
 		if (empty($object_name))
 		{
+		    //echo "good";
 			$object_name = strtolower($class);
+
 			if (isset($this->_ci_varmap[$object_name]))
 			{
 				$object_name = $this->_ci_varmap[$object_name];
@@ -1263,6 +1265,7 @@ class CI_Loader {
 		$CI =& get_instance();
 		if (isset($CI->$object_name))
 		{
+		    //echo "gppd";
 			if ($CI->$object_name instanceof $class_name)
 			{
 				log_message('debug', $class_name." has already been instantiated as '".$object_name."'. Second attempt aborted.");
@@ -1276,9 +1279,12 @@ class CI_Loader {
 		$this->_ci_classes[$object_name] = $class;
 
 		// Instantiate the class
+        //echo $class_name;
 		$CI->$object_name = isset($config)
 			? new $class_name($config)
 			: new $class_name();
+		//var_dump($CI->$object_name);
+		//die();
 	}
 
 	// --------------------------------------------------------------------

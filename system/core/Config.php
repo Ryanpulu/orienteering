@@ -64,6 +64,18 @@ class CI_Config {
 	 */
 	public $is_loaded =	array();
 
+    /* @used-by APP config
+     * @var array
+     */
+
+    public static $Conf = array();
+
+    /*
+     * @used-by check the Conf is load
+     * @var boolean
+     */
+
+    public static $ConfFlag = false;
 	/**
 	 * List of paths to search when trying to load a config file.
 	 *
@@ -375,5 +387,25 @@ class CI_Config {
 	{
 		$this->config[$item] = $value;
 	}
-
+    //加载配置文件
+    public static function getConf(CI_Controller $CI_Con,CI_Cache $cache){
+	    if(!self::$ConfFlag){
+	        echo "加载了一次啊";
+            $redisKey = $CI_Con::getRedisKey(__CLASS__,__FUNCTION__);
+            $_conf = $cache->redis->get($redisKey);
+            if(!$_conf){
+                $_conf = self::loadConfToml($CI_Con);//解析toml配置文件
+                $cache->redis->save($redisKey,$_conf,275000);
+            }
+            self::$ConfFlag = true;
+            self::$Conf = $_conf;
+        }
+    }
+    //加载toml配置文件并解析
+    private static function loadConfToml(CI_Controller $CI_Con)
+    {
+        $CI_Con->load->library('toml_lib');
+        $Conf = ($CI_Con->toml_lib)::parseFile(APPPATH."/config/config.toml");
+        return $Conf;
+    }
 }
