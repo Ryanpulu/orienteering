@@ -1,6 +1,6 @@
 #orienteering_rest
 #orienteering rest API
-#ignore config.toml,project.txt,database.php,if need ,contact author
+#ignore config.toml,project.txt,database.php,log,cache,if need ,contact author
 #author : Ryan
 #author mail : mailto:ryanpulu@outlook.com
 #web server : nginx ; dataBase : mysql , redis ; database driver: PDO; language: PHP ;  frame : CodeIgniter ;
