@@ -16,7 +16,7 @@ class Test_model extends CI_Model {
         var_dump($this->db->stat);
         //$this->db->stat->execute([":id"=>50]);
         //$this->db->stat->execute();
-        $this->db->i_execute([":id"=>30]);
+        var_dump($this->db->i_execute([":id"=>30]));
         $data = $this->db->i_fetchObject();
         //$stat->execute([":id"=>30]);
         //$data = $stat->fetchAll(PDO::FETCH_ASSOC);

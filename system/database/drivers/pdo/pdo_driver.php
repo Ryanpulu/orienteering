@@ -65,12 +65,6 @@ class CI_DB_pdo_driver extends CI_DB {
 	 */
 	public $stat;
 
-	/*
-	 * PDO execute 结果
-	 * @var boolean
-	 * */
-	public $exStatus = false;
-
 	/**
 	 * PDO Options
 	 *
@@ -207,15 +201,15 @@ class CI_DB_pdo_driver extends CI_DB {
     }
 
     /**
-     * PDO execute
      * @param array $bindArr
+     * @return mixed
      * @throws Exception
      */
     public function i_execute(array $bindArr){
         if($this->stat===null){
             throw new Exception("stat is not initialized");
         }
-        $this->exStatus =  $this->stat->execute($bindArr);
+        return $this->stat->execute($bindArr);
     }
 
     /**
@@ -238,7 +232,7 @@ class CI_DB_pdo_driver extends CI_DB {
      * @throws Exception
      */
     public function i_fetchObject(){
-        if($this->stat===null||$this->exStatus===false){
+        if($this->stat===null){
             throw new Exception("stat is not initialized or the stat execute is false");
         }
         $_data = $this->stat->fetchObject();
@@ -251,7 +245,6 @@ class CI_DB_pdo_driver extends CI_DB {
      */
     private function init_Stat(){
         $this->stat = null;
-        $this->exStatus = false;
     }
 	// --------------------------------------------------------------------
 
