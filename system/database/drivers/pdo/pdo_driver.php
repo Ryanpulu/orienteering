@@ -59,6 +59,18 @@ class CI_DB_pdo_driver extends CI_DB {
 	 */
 	public $dbdriver = 'pdo';
 
+	/*
+	 * PDO::statement 对象
+	 *
+	 */
+	public $stat;
+
+	/*
+	 * PDO execute 结果
+	 * @var boolean
+	 * */
+	public $exStatus = false;
+
 	/**
 	 * PDO Options
 	 *
@@ -186,6 +198,61 @@ class CI_DB_pdo_driver extends CI_DB {
 		return $this->conn_id->query($sql);
 	}
 
+    /**
+     * PDO prepare
+     * @param $sql
+     */
+    public function i_prepare($sql){
+        $this->stat = $this->conn_id->prepare($sql);
+    }
+
+    /**
+     * PDO execute
+     * @param array $bindArr
+     * @throws Exception
+     */
+    public function i_execute(array $bindArr){
+        if($this->stat===null){
+            throw new Exception("stat is not initialized");
+        }
+        $this->exStatus =  $this->stat->execute($bindArr);
+    }
+
+    /**
+     * PDO fetchAll
+     * @return mixed
+     * @throws Exception
+     */
+    public function i_fetchAll(){
+        if($this->stat===null||$this->exStatus===false){
+            throw new Exception("stat is not initialized or the stat execute is false");
+        }
+        $_data =  $this->stat->fetchAll(PDO::FETCH_ASSOC);
+        $this->init_Stat();
+        return $_data;
+    }
+
+    /**
+     * PDO fetchObject
+     * @return mixed
+     * @throws Exception
+     */
+    public function i_fetchObject(){
+        if($this->stat===null||$this->exStatus===false){
+            throw new Exception("stat is not initialized or the stat execute is false");
+        }
+        $_data = $this->stat->fetchObject();
+        $this->init_Stat();
+        return $_data;
+    }
+
+    /**
+     * init stat,exStatus   //初始化属性stat ，exStatus ，避免影响其他模型类操作中的判断
+     */
+    private function init_Stat(){
+        $this->stat = null;
+        $this->exStatus = false;
+    }
 	// --------------------------------------------------------------------
 
 	/**
