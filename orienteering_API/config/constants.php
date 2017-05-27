@@ -87,4 +87,4 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
  *
  * APP config
  * */
-defined('RED_CONF_KEY')        OR define('RED_CONF_KEY', "orienteering_Conf_version_1.0");
+defined('RED_CONF_KEY')        OR define('RED_CONF_KEY', "Conf_orienteering_version_1.0");  //配置文件版本号

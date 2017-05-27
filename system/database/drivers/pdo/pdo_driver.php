@@ -73,7 +73,12 @@ class CI_DB_pdo_driver extends CI_DB {
 	public $options = array();
 
 	// --------------------------------------------------------------------
-
+    /*
+     * PDO execute status
+     *
+     * @var boolean
+     */
+    private $i_status = TRUE;
 	/**
 	 * Class constructor
 	 *
@@ -209,7 +214,8 @@ class CI_DB_pdo_driver extends CI_DB {
         if($this->stat===null){
             throw new Exception("stat is not initialized");
         }
-        return $this->stat->execute($bindArr);
+        $this->i_status = $this->stat->execute($bindArr);
+        return $this->i_status;
     }
 
     /**
@@ -217,14 +223,15 @@ class CI_DB_pdo_driver extends CI_DB {
      * @return mixed
      * @throws Exception
      */
-    public function i_fetchAll(){
-        if($this->stat===null||$this->exStatus===false){
+    public function i_fetchAll($fetchOption='PDO::FETCH_ASSOC'){
+        if($this->stat===null){
             throw new Exception("stat is not initialized or the stat execute is false");
         }
-        $_data =  $this->stat->fetchAll(PDO::FETCH_ASSOC);
+        $_data =  $this->stat->fetchAll($fetchOption);
         $this->init_Stat();
         return $_data;
     }
+
 
     /**
      * PDO fetchObject
@@ -247,6 +254,68 @@ class CI_DB_pdo_driver extends CI_DB {
         $this->stat = null;
     }
 	// --------------------------------------------------------------------
+
+    /**
+     *
+     * 开启一个事务
+     */
+    public function i_trans_start(){
+        $this->conn_id->beginTransaction();
+    }
+
+    /**
+     *
+     * 回滚一个事务
+     */
+    private function i_trans_rollback(){
+        $this->conn_id->rollBack();
+    }
+
+    /**
+     *
+     * 提交一个事务
+     */
+    private function i_trans_commit(){
+        $this->conn_id->commit();
+    }
+
+    /**
+     * 返回最近一次数据库操作的错误信息
+     * @return mixed
+     */
+
+    public function i_error_info(){
+        return $this->conn_id->errorInfo();
+    }
+
+    /**
+     * 获取跟数据库句柄上一次操作相关的 SQLSTATE
+     * @return mixed
+     */
+    public function i_error_code(){
+        return $this->conn_id->errorCode();
+    }
+
+    /**
+     * 返回最后插入行的ID或序列值
+     * @return mixed
+     */
+    public function i_last_insertId($name=NULL){
+        return $this->conn_id->lastInsertId($name);
+    }
+
+    /**
+     * 完成一个事务 将事务结果返回
+     * @return bool
+     */
+    public function i_trans_complete(){
+        if($this->i_status === FALSE){
+            $this->i_trans_rollback();
+        }else{
+            $this->i_trans_commit();
+        }
+        return $this->i_status;
+    }
 
 	/**
 	 * Begin Transaction

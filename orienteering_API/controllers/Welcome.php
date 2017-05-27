@@ -20,7 +20,7 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
-        $this->load->model('test_model');
-        $this->test_model->check_redis();
+        $this->load->model('example_model');
+        $this->example_model->check_redis();
 	}
 }

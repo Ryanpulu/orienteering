@@ -55,6 +55,22 @@ class CI_Log {
 	 */
 	protected $_log_path;
 
+	/*
+	 * Path to save business_log files
+	 *
+	 * @var string
+	 */
+
+	protected $business_log_path;
+
+    /*
+     * Path to save i_log files
+     *
+     * @var array
+     */
+
+    protected $_i_levels = ['access','error'];
+
 	/**
 	 * File permissions
 	 *
@@ -97,6 +113,13 @@ class CI_Log {
 	 */
 	protected $_enabled = TRUE;
 
+    /**
+     * Whether or not the i_logger can write to the log files
+     *
+     * @var bool
+     */
+    protected $_i_enabled = TRUE;
+
 	/**
 	 * Predefined logging levels
 	 *
@@ -125,8 +148,11 @@ class CI_Log {
 		isset(self::$func_overload) OR self::$func_overload = (extension_loaded('mbstring') && ini_get('mbstring.func_overload'));
 
 		$this->_log_path = ($config['log_path'] !== '') ? $config['log_path'] : APPPATH.'logs/';
+		$this->business_log_path = ($config['business_log_path'] != '') ? $config['business_log_path'] : APPPATH.'logs/business/';
 		$this->_file_ext = (isset($config['log_file_extension']) && $config['log_file_extension'] !== '')
 			? ltrim($config['log_file_extension'], '.') : 'php';
+
+		$this->_create_business_log_dir();      //创建business log
 
 		file_exists($this->_log_path) OR mkdir($this->_log_path, 0755, TRUE);
 
@@ -293,4 +319,85 @@ class CI_Log {
 			? substr($str, $start, $length)
 			: substr($str, $start);
 	}
+
+	/*
+	 * @扩展log 写入方法
+	 * */
+    public function i_write_log($msg, $level)
+    {
+        if(!in_array($level,$this->_i_levels)){
+            throw new Exception("没有指定的日志类型可写入");
+        }
+        if($this->_i_enabled  ===  FALSE){
+            return FALSE;
+        }
+        $filepath = $this->business_log_path.$level.'/'.'log-'.date('Y-m-d').'.'.$this->_file_ext;
+        $message = '';
+        if ( ! file_exists($filepath))
+        {
+            $newfile = TRUE;
+            // Only add protection to php files
+            if ($this->_file_ext === 'php')
+            {
+                $message .= "<?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>\n\n";
+            }
+        }
+        if ( ! $fp = @fopen($filepath, 'ab'))
+        {
+            return FALSE;
+        }
+        flock($fp, LOCK_EX);
+
+        // Instantiating DateTime with microseconds appended to initial date is needed for proper support of this format
+        if (strpos($this->_date_fmt, 'u') !== FALSE)
+        {
+            $microtime_full = microtime(TRUE);
+            $microtime_short = sprintf("%06d", ($microtime_full - floor($microtime_full)) * 1000000);
+            $date = new DateTime(date('Y-m-d H:i:s.'.$microtime_short, $microtime_full));
+            $date = $date->format($this->_date_fmt);
+        }
+        else
+        {
+            $date = date($this->_date_fmt);
+        }
+
+        $message .= $this->_format_line($level, $date, $msg);
+        for ($written = 0, $length = self::strlen($message); $written < $length; $written += $result)
+        {
+
+            if (($result = fwrite($fp, self::substr($message, $written))) === FALSE)
+            {
+                break;
+            }
+        }
+
+        flock($fp, LOCK_UN);
+        fclose($fp);
+
+        if (isset($newfile) && $newfile === TRUE)
+        {
+            chmod($filepath, $this->_file_permissions);
+        }
+
+        return is_int($result);
+    }
+    /*
+     * @used-by: create business log
+     */
+    private function _create_business_log_dir(){
+        if(isset($this->_i_levels)&&is_array($this->_i_levels)){
+            foreach($this->_i_levels as $value){
+                $_i_log_path = $this->business_log_path.$value.'/';
+                file_exists($_i_log_path) OR mkdir($_i_log_path, 0755, TRUE);
+
+                if ( ! is_dir($_i_log_path) OR ! is_really_writable($_i_log_path))
+                {
+                    $this->_i_enabled = FALSE;
+                    break;
+                }
+            }
+        }else{
+            throw new Exception("_i_levels must be a array");
+        }
+    }
 }

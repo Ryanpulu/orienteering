@@ -85,17 +85,6 @@ class CI_Model {
      * @return string
      */
     public final static function getRedisKey($curClassName, $curMethodName, $paraString=""){
-	    return $paraString=="" ? $curClassName.'>'.$curMethodName : $curClassName.'>'.$curMethodName.'?'.$paraString;
-    }
-
-    /**
-     * @param $redisKey //存到到redis的键名
-     * @param $data     //需要存储的数据
-     * @param int $expirationTime   //设置该条存储的过期时间
-     * @return boolean      返回处理结果 成功为true，失败是false
-     */
-    public final function redis_SaveData( $redisKey, $data, $expirationTime=0){
-        $redisTimeExp = is_int($expirationTime)&&$expirationTime>0 ?  $expirationTime : CI_Config::$Conf["Redis"]["ExpirationTime"];
-        return $this->cache->redis->save($redisKey,$data,$redisTimeExp);
+	    return $paraString=="" ? 'V='.CI_Config::$Conf["Version"]["APPVersion"].'--'.$curClassName.'->'.$curMethodName : $curClassName.'>'.$curMethodName.'?'.$paraString;
     }
 }

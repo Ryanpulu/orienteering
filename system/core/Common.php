@@ -470,7 +470,38 @@ if ( ! function_exists('log_message'))
 	}
 }
 
-// ------------------------------------------------------------------------
+//  -----------------------------------------------------------------------
+
+if ( ! function_exists('i_log_message'))
+{
+    /**
+     * Error Logging Interface
+     *
+     * We use this as a simple mechanism to access the logging
+     * class and send messages to be logged.
+     *
+     * @param $level	string
+     * @param $curClassName	string
+     * @param $curFuncName	string
+     * @param $userId	int
+     * @param $msg	string
+     * @return	void
+     */
+    function i_log_message($level,$curClassName,$curFuncName,$userId=0,$msg='')
+    {
+        static $_log;
+
+        if ($_log === NULL)
+        {
+            // references cannot be directly assigned to static variables, so we use an array
+            $_log[0] =& load_class('Log', 'core');
+        }
+        $message = $msg=='' ? 'the User:'.$userId.' touched >>>> '.$curClassName.'->'.$curFuncName : 'the User:'.$userId.' touched >>>> '.$curClassName.'.'.$curFuncName.'---des--'.$msg;       //拼装用户访问日志记录文字
+        $_log[0]->i_write_log($message , $level);
+    }
+}
+
+//-----------------------------------------------------------------------------------------------------
 
 if ( ! function_exists('set_status_header'))
 {

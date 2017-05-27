@@ -172,7 +172,7 @@ class CI_Cache_redis extends CI_Driver
 	 * @param	bool	$raw	Whether to store the raw value (unused)
 	 * @return	bool	TRUE on success, FALSE on failure
 	 */
-	public function save($id, $data, $ttl = 60, $raw = FALSE)
+	public function save($id, $data, $ttl = 0, $raw = FALSE)
 	{
 		if (is_array($data) OR is_object($data))
 		{
@@ -189,7 +189,7 @@ class CI_Cache_redis extends CI_Driver
 			$this->_serialized[$id] = NULL;
 			$this->_redis->sRemove('_ci_redis_serialized', $id);
 		}
-
+		$ttl = is_integer($ttl)&&$ttl>0 ? $ttl : CI_Config::$Conf['Redis']['ExpirationTime'];
 		return $this->_redis->set($id, $data, $ttl);
 	}
 
