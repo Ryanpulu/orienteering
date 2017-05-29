@@ -47,7 +47,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @link		https://codeigniter.com/user_guide/libraries/config.html
  */
 class CI_Model {
+    /*
+     * 缓存驱动器
+     *
+     * @var object
+     */
     public $cache;
+    /*
+     * 模型类中的数据表名称
+     *
+     * @var string
+     */
+    protected $table;
 	/**
 	 * Class constructor
 	 *
