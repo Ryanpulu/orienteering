@@ -48,12 +48,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 class CI_Model {
     /*
-     * 缓存驱动器
-     *
-     * @var object
-     */
-    public $cache;
-    /*
      * 模型类中的数据表名称
      *
      * @var string
@@ -64,9 +58,8 @@ class CI_Model {
 	 *
 	 * @return	void
 	 */
-	public function __construct(CI_Cache &$cache)
+	public function __construct()
 	{
-	    $this->cache = $cache;
 		log_message('info', 'Model Class Initialized');
 	}
 
@@ -97,5 +90,20 @@ class CI_Model {
      */
     public final static function getRedisKey($curClassName, $curMethodName, $paraString=""){
 	    return $paraString=="" ? 'V='.CI_Config::$Conf["Version"]["APPVersion"].'--'.$curClassName.'->'.$curMethodName : $curClassName.'>'.$curMethodName.'?'.$paraString;
+    }
+
+    /**
+     * @desc 如果要在子模型中使用该方法，则子模型中必须有魔法方法__set，或者使用该方法设置的属性是子模型中的一个公有属性
+     * @notice 不建议使用该方法
+     * @param $name
+     * @param $value
+     * @throws Exception
+     */
+    public final function setNature($name, $value){
+        var_dump(ucfirst($this->table.'_model'));
+        if( ! property_exists(ucfirst($this->table.'_model'),$name) ){
+            throw new Exception("the nature $name in the class ".__CLASS__." is not declared ");
+        }
+        $this->$name = $value;
     }
 }

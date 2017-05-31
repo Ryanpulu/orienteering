@@ -496,7 +496,8 @@ if ( ! function_exists('i_log_message'))
             // references cannot be directly assigned to static variables, so we use an array
             $_log[0] =& load_class('Log', 'core');
         }
-        $message = $msg=='' ? 'the User:'.$userId.' touched >>>> '.$curClassName.'->'.$curFuncName : 'the User:'.$userId.' touched >>>> '.$curClassName.'.'.$curFuncName.'---des--'.$msg;       //拼装用户访问日志记录文字
+        $message = 'the User:'.$userId.' touched >>>> '.$curClassName.'->'.$curFuncName.'--url--'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'--userAgent--'.$_SERVER['HTTP_USER_AGENT'];
+        $message = $msg = '' ? $message : $message.'---des--'.$msg;     //拼装用户访问日志记录文字
         $_log[0]->i_write_log($message , $level);
     }
 }

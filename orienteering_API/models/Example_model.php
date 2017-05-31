@@ -7,11 +7,8 @@
  * Author Mail : ryanpulu@outlook.com
  */
 class Example_model extends CI_Model {
-    public function __construct(CI_Cache &$cache)
-    {
-        parent::__construct($cache);
-    }
     public function check_redis(){
+        //var_dump($this->cache);
         //$this->db->i_prepare("SELECT * FROM user WHERE `id`=:id");
         /*var_dump($this->db->stat);
         i_log_message("access",__CLASS__,__FUNCTION__);

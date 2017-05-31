@@ -20,8 +20,13 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
-        $this->load->model('activity_model');
-        //$this->activity_model->getTables();
-        //echo "hello world";
+        //$this->load->model('user_token_model');
+        //var_dump($this->user_token_model->getUserToken(41));
+        $this->request_lib->checkReqData();
+        var_dump($this->request_lib->reqData);
+        //$this->load->model('user_token_model');
+        //print_r($this->user_token_model->getUserToken());
+        //echo $this->response_msg->jsonResp(3);
+        //var_dump($this->input);
 	}
 }

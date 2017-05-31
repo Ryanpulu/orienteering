@@ -10,3 +10,5 @@
 #for example $this->cache is declared in CI_Controller
 #2丶Conf:
 #the app Config is the config.toml,it be analyzed by the toml_lib.php that will be loading when the CI_Controller is loading,if the app Config is not exist in the redis ,then the CI_Controller will call the method in the toml_lib.php to analyzed the config.toml,and save it in redis.
+#3丶code 
+#charset=>utf-8

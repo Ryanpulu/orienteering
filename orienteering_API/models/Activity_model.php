@@ -1,4 +1,5 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 /**
  * Created by PhpStorm.
  * User: Ryanp
@@ -10,18 +11,19 @@ class Activity_model extends CI_Model {
     protected $table = "activity";
 
     /*
-     * 活动Id
+     * @desc activity idit
+     * @var int
      */
-    private $activityId;
-
-    private $name;
+    private $activityId=0;
+    /*
+     * @desc activity name
+     * @var string
+     */
+    private $name=NULL;
 
     private $ownerId;
 
-    public function __construct(CI_Cache &$cache)
-    {
-        parent::__construct($cache);
-    }
+
 
 }
 

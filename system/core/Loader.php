@@ -348,11 +348,9 @@ class CI_Loader {
 		{
 			throw new RuntimeException("Class ".$model." already exists and doesn't extend CI_Model");
 		}
-		if(!isset($CI->cache)){
-		    throw new Exception("系统错误");
-        }
+
 		$this->_ci_models[] = $name;
-		$CI->$name = new $model($CI->cache);
+		$CI->$name = new $model();
 		return $this;
 	}
 
