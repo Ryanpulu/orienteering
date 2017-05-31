@@ -404,7 +404,8 @@ class CI_Config {
     private static function loadConfToml(CI_Controller $CI_Con)
     {
         $CI_Con->load->library('toml_lib');
-        $Conf = ($CI_Con->toml_lib)::parseFile(APPPATH."/config/config.toml");
+        $toml_lib_object = $CI_Con->toml_lib;
+        $Conf = $toml_lib_object::parseFile(APPPATH."/config/config.toml");
         return $Conf;
     }
 }
