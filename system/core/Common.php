@@ -879,3 +879,15 @@ if ( ! function_exists('function_usable'))
 		return FALSE;
 	}
 }
+if ( ! function_exists('getRedisKey'))
+{
+    /**
+     * @param $curClassName
+     * @param $curMethodName
+     * @param string $paraString    //请求参数字符串
+     * @return string
+     */
+    function getRedisKey($curClassName, $curMethodName, $paraString=""){
+        return $paraString=="" ? 'V='.CI_Config::$Conf["Version"]["APPVersion"].'--'.$curClassName.'->'.$curMethodName : $curClassName.'>'.$curMethodName.'?'.$paraString;
+    }
+}

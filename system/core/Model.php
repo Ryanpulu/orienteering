@@ -83,16 +83,6 @@ class CI_Model {
 	}
 
     /**
-     * @param $curClassName
-     * @param $curMethodName
-     * @param string $paraString    //请求参数字符串
-     * @return string
-     */
-    public final static function getRedisKey($curClassName, $curMethodName, $paraString=""){
-	    return $paraString=="" ? 'V='.CI_Config::$Conf["Version"]["APPVersion"].'--'.$curClassName.'->'.$curMethodName : $curClassName.'>'.$curMethodName.'?'.$paraString;
-    }
-
-    /**
      * @desc 如果要在子模型中使用该方法，则子模型中必须有魔法方法__set，或者使用该方法设置的属性是子模型中的一个公有属性
      * @notice 不建议使用该方法
      * @param $name
