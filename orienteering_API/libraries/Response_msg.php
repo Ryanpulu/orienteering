@@ -14,7 +14,7 @@ class Response_msg{
      * @var array
      */
 
-    const CodeArr = array(
+    private static $CodeArr = array(
         3=>'token错误',
         4=>'token过期',
         5=>'参数缺失',
@@ -32,7 +32,7 @@ class Response_msg{
      * @return array
      */
     public function getCodeMsgArr(){
-        return self::CodeArr;
+        return self::$CodeArr;
     }
 
     /**
@@ -73,11 +73,11 @@ class Response_msg{
      */
     public function jsonResp($code,$data=null){
         $headerStr = implode(';',['json'=>$this->_jsonHeader(),'charset'=>$this->_charsetHeader()]);
-        if(!array_key_exists($code,self::CodeArr)){
+        if(!array_key_exists($code,self::$CodeArr)){
             throw new Exception("该code码没有被设置");
         }
         $this->_respHeader($headerStr);
-        return $data===null ? json_encode(['code'=>$code,'desc'=>self::CodeArr[$code]]) : json_encode(['code'=>$code,'desc'=>self::CodeArr[$code],'data'=>$data]);
+        return $data===null ? json_encode(['code'=>$code,'desc'=>self::$CodeArr[$code]]) : json_encode(['code'=>$code,'desc'=>self::$CodeArr[$code],'data'=>$data]);
     }
 }
 

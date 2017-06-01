@@ -716,7 +716,6 @@ class CI_Loader {
 	 */
 	public function driver($library, $params = NULL, $object_name = NULL)
 	{
-	    //echo "good";
 		if (is_array($library))
 		{
 			foreach ($library as $key => $value)
@@ -748,7 +747,7 @@ class CI_Loader {
 		// and typically identically named to the library
 		if ( ! strpos($library, '/'))
 		{
-			$library = ucfirst($library).'/'.$library;
+			$library = ucfirst($library).'/'.ucfirst($library);
 		}
 		return $this->library($library, $params, $object_name);
 	}
@@ -1029,7 +1028,6 @@ class CI_Loader {
 		{
 			$subdir = '';
 		}
-
 		// Is this a stock library? There are a few special conditions if so ...
 		if (file_exists(BASEPATH.'libraries/'.$subdir.$class.'.php'))
 		{
@@ -1046,8 +1044,7 @@ class CI_Loader {
 				continue;
 			}
 
-			$filepath = $path.'libraries/'.$subdir.$class.'.php';
-
+			$filepath = $path.'libraries/'.$subdir.ucfirst($class).'.php';
 			// Safety: Was the class already loaded by a previous call?
 			if (class_exists($class, FALSE))
 			{

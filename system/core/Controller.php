@@ -79,7 +79,6 @@ class CI_Controller {
 		$this->load->initialize();
 		log_message('info', 'Controller Class Initialized');
         //加载cache驱动器，判断redis是否存有Conf配置，没有则加载toml_lib文件调用方法解析toml配置，并存储到redis，赋值CI_Config $Conf值为配置数组
-        $this->load->driver('cache');
         CI_Config::getConf(self::$instance,$this->cache);
 	}
 
