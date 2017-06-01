@@ -888,6 +888,7 @@ if ( ! function_exists('getRedisKey'))
      * @return string
      */
     function getRedisKey($curClassName, $curMethodName, $paraString=""){
-        return $paraString=="" ? 'V='.CI_Config::$Conf["Version"]["APPVersion"].'--'.$curClassName.'->'.$curMethodName : $curClassName.'>'.$curMethodName.'?'.$paraString;
+        $keyBase = 'V='.CI_Config::$Conf["Version"]["APPVersion"].'--'.$curClassName.'->'.$curMethodName;
+        return $paraString=="" ? $keyBase : $keyBase.'?'.$paraString;
     }
 }
