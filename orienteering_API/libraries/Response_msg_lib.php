@@ -7,7 +7,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * Time: 11:42
  * Author Mail : ryanpulu@outlook.com
  */
-class Response_msg{
+class Response_msg_lib{
 
     /*
      * @desc code数组

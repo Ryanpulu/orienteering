@@ -45,7 +45,10 @@ class Request_lib{
         $this->reqData = $_req_data;
         $this->ckDataFiled = $ckDataFiled;
         if( ! $this->_ckReqDataRational() ){
-            echo $this->CI->response_msg->jsonResp(7);
+            if( ! isset($this->CI->response_msg_lib)){
+                $this->CI->load->library('response_msg_lib');
+            }
+            echo $this->CI->response_msg_lib->jsonResp(7);
             i_log_message('error',__CLASS__,__FUNCTION__,0);
             die();
         }
