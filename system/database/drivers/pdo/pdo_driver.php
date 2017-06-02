@@ -223,11 +223,11 @@ class CI_DB_pdo_driver extends CI_DB {
      * @return mixed
      * @throws Exception
      */
-    public function i_fetchAll($fetchOption='PDO::FETCH_ASSOC'){
+    public function i_fetchAll($fetchAssoc=TRUE){
         if($this->stat===null){
             throw new Exception("stat is not initialized or the stat execute is false");
         }
-        $_data =  $this->stat->fetchAll($fetchOption);
+        $_data = $fetchAssoc ? $this->stat->fetchAll(PDO::FETCH_ASSOC) : $this->stat->fetchAll();
         $this->init_Stat();
         return $_data;
     }

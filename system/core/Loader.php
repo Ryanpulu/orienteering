@@ -214,7 +214,7 @@ class CI_Loader {
 		{
 			$params = NULL;
 		}
-
+        //echo $library;
 		$this->_ci_load_library($library, $params, $object_name);
 		return $this;
 	}
@@ -716,6 +716,7 @@ class CI_Loader {
 	 */
 	public function driver($library, $params = NULL, $object_name = NULL)
 	{
+	    //print_r($lib);
 		if (is_array($library))
 		{
 			foreach ($library as $key => $value)
@@ -747,7 +748,7 @@ class CI_Loader {
 		// and typically identically named to the library
 		if ( ! strpos($library, '/'))
 		{
-			$library = ucfirst($library).'/'.ucfirst($library);
+			$library = ucfirst($library).'/'.$library;
 		}
 		return $this->library($library, $params, $object_name);
 	}
@@ -1012,7 +1013,7 @@ class CI_Loader {
 		// Get the class name, and while we're at it trim any slashes.
 		// The directory path can be included as part of the class name,
 		// but we don't want a leading slash
-		$class = str_replace('.php', '', trim($class, '/'));
+		$class = str_replace('.php', '', trim($class, '/'));;
         //echo $class;
 		// Was the path included with the class name?
 		// We look for a slash to determine this
@@ -1031,7 +1032,8 @@ class CI_Loader {
 		// Is this a stock library? There are a few special conditions if so ...
 		if (file_exists(BASEPATH.'libraries/'.$subdir.$class.'.php'))
 		{
-		    //echo "good";
+		    //echo 'good';
+		    //echo BASEPATH.'libraries/'.$subdir.$class.'.php',"<hr />";
 			return $this->_ci_load_stock_library($class, $subdir, $params, $object_name);
 		}
 
@@ -1130,7 +1132,7 @@ class CI_Loader {
 		array_unshift($paths, APPPATH);
 		foreach ($paths as $path)
 		{
-            //echo $path.'libraries/'.$file_path.$library_name.'.php';
+
 			if (file_exists($path = $path.'libraries/'.$file_path.$library_name.'.php'))
 			{
 				// Override
@@ -1237,7 +1239,6 @@ class CI_Loader {
 		}
 
 		$class_name = $prefix.$class;
-
 		// Is the class name valid?
 		if ( ! class_exists($class_name, FALSE))
 		{

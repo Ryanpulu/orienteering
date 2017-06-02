@@ -22,8 +22,11 @@ class Welcome extends CI_Controller {
 	{
         //$this->load->model('user_token_model');
         //var_dump($this->user_token_model->getUserToken(41));
-        $this->request_lib->checkReqData();
-        var_dump($this->request_lib->reqData);
+        //$this->request_lib->checkReqData();
+        //var_dump($this->request_lib->reqData);
+        var_dump($this);
+        $this->load->library('Pay/pay_lib');
+        $this->pay_lib->action(['service'=>'Pay','thirdParty'=>'Ali','type'=>'APP']);
         //$this->load->model('user_token_model');
         //print_r($this->user_token_model->getUserToken());
         //echo $this->response_msg->jsonResp(3);

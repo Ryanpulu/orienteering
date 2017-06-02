@@ -15,11 +15,13 @@ class Response_msg_lib{
      */
 
     private static $CodeArr = array(
+        0=>'SUCCESS',
         3=>'token错误',
         4=>'token过期',
         5=>'参数缺失',
         7=>'非法参数',
         40003=>'您没有该操作权限',
+        50001=>'系统错误'
     );
 
     /*
