@@ -16,17 +16,42 @@ class Map extends CI_Controller {
         $mapPoint = $this->activity_point_model->getMapPoint($mapId);
         $pointArrDetail = $this->activity_point_model->getPointArrDetail($mapPoint);
         $mapLine = $this->map_line_model->getAllLine($mapId);
-        echo $this->response_msg_lib->jsonResp(0,$mapLine);
+        $data = $this->_getOneMapAssembly($mapDetail,$pointArrDetail,$mapLine);
+        echo $this->response_msg_lib->jsonResp(0,$data);
+        exit(1);
     }
 
-    private function _getOneMapAssembly($mapDetail,$mapPoint,$pointArrDetail,$mapLine){
-        if( !$mapDetail OR !$mapPoint OR !$pointArrDetail OR !$mapLine  ){
-            i_log_message('Error',__CLASS__,__FUNCTION__);
-            $this->response_msg_lib->jsonResp(50001);
+    private function _getOneMapAssembly($mapDetail,$pointArrDetail,$mapLine){
+        if( !$mapDetail OR !$pointArrDetail OR !$mapLine  ){
+            i_log_message('error',__CLASS__,__FUNCTION__);
+            echo $this->response_msg_lib->jsonResp(50001);
+            exit(1);
         }else{
-            foreach($mapLine as $line){
-                $lineArr = explode(',',$line);
+            foreach($mapLine as &$line){
+                $lineArr = explode(',',$line['line']);
+                if( ! is_array($lineArr) ){
+                    i_log_message('error',__CLASS__,__FUNCTION__,0,'推荐路线解析不是一个数组');
+                    echo $this->response_msg_lib->jsonResp(50001,'没有找到对应的');
+                    exit(1);
+                }else{
+                    foreach($lineArr as $key=>$pointId){
+                        if( ! isset($pointArrDetail[$pointId]) ){
+                        }else{
+                            if($key==0){
+                                $line['pointId'] = (integer)$pointId;
+                                $line['location'] = $pointArrDetail[$pointId]['location'];
+                                $line['pic'] = $pointArrDetail[$pointId]['pic'];
+                            }
+                            $line['pointLineArr'][] = $pointArrDetail[$pointId];
+                        }
+                    }
+                }
+                unset($line['line']);
             }
+            $response = json_decode(json_encode($mapDetail),TRUE);
+            $response['lineArr'] = $mapLine;
+            $response['pointArr'] = array_values($pointArrDetail);
+            return $response;
         }
     }
 

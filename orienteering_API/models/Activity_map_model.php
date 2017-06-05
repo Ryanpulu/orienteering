@@ -88,13 +88,13 @@ class Activity_map_model extends CI_Model{
     public function getMapDetail($mapId){
         $this->db->i_prepare('SELECT `mapId`,`name`,`locationName`,`bound`,`center`,`pic` FROM `activity_map` WHERE `mapId`=:mapId LIMIT :limit');
         $this->db->i_execute([":mapId"=>$mapId,":limit"=>1]);
-        return $this->db->i_fetchObject();
+        $res = $this->db->i_fetchObject();
+        if( isset($res->pic) ){
+            $res->pic = map_picAssembly($res->pic);
+        }
+        return $res;
     }
 
 
-
-    private function _picAssembly($pic){
-        return ((stristr($pic,'http:') === false)&&$pic!='') ? CI_Config::$Conf['Map']['PicDo']."/".$pic : $pic;
-    }
 }
 

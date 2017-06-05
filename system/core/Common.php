@@ -502,6 +502,19 @@ if ( ! function_exists('i_log_message'))
     }
 }
 
+if ( ! function_exists('map_picAssembly') ){
+
+    /**
+     * @param $pic
+     * @return string
+     * @desc 地图图片url拼装
+     */
+
+    function map_picAssembly($pic){
+        return ((stristr($pic,'http:') === false)&&$pic!='') ? CI_Config::$Conf['Map']['PicDo']."/".$pic : $pic;
+    }
+}
+
 //-----------------------------------------------------------------------------------------------------
 
 if ( ! function_exists('set_status_header'))
