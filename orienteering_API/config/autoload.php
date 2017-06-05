@@ -79,7 +79,7 @@ $autoload['libraries'] = array('database','response_msg_lib','request_lib',);
 |	$autoload['drivers'] = array('cache' => 'cch');
 |
 */
-$autoload['drivers'] = array('cache');
+$autoload['drivers'] = array('Cache');
 
 /*
 | -------------------------------------------------------------------

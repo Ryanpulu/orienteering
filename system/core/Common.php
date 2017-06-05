@@ -515,6 +515,14 @@ if ( ! function_exists('map_picAssembly') ){
     }
 }
 
+//-----------------------------------------------------
+
+if ( ! function_exists('activity_picAssembly') ){
+    function activity_picAssembly($pic){
+        return ((stristr($pic,'http:') === false)&&$pic!='') ? CI_Config::$Conf['Activity']['PicDo']."/".$pic : $pic;
+    }
+}
+
 //-----------------------------------------------------------------------------------------------------
 
 if ( ! function_exists('set_status_header'))

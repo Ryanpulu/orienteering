@@ -101,7 +101,7 @@ class Activity_point_model extends CI_Model{
             $pointIdArrKey = [];
             foreach($pointIdArr as $value){
                 $pointIdArrKey[$value['pointId']] = $value;
-                $pointIdArrKey[$value['pointId']]['pic'] = map_picAssembly($value['pic']);
+                $pointIdArrKey[$value['pointId']]['pic'] = activity_picAssembly($value['pic']);
             }
         }else{
             $pointIdArrKey = $pointIdArr;
