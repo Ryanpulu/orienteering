@@ -87,6 +87,10 @@ class Activity_point_model extends CI_Model{
      * @return mixed
      */
     public function getPointArrDetail(array $pointArr){
+        $redisData = $this->cache->redis->get( getRedisKey(__CLASS__,__FUNCTION__) );
+        if($redisData!=FALSE){
+            return $redisData;
+        }
         $pointIdArr = array();
         foreach($pointArr as $key => $pointId){
             $pointIdArr[':pointId'.$key] = $pointId;
@@ -106,6 +110,7 @@ class Activity_point_model extends CI_Model{
         }else{
             $pointIdArrKey = $pointIdArr;
         }
+        $this->cache->redis->save( getRedisKey(__CLASS__,__FUNCTION__),$pointIdArrKey );
         return $pointIdArrKey;
     }
 
