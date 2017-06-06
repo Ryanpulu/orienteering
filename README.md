@@ -3,7 +3,7 @@
 #ignore config.toml,project.txt,database.php,log,cache,redis.php,if need ,contact author
 #author : Ryan
 #author mail : mailto:ryanpulu@outlook.com
-#web server : nginx ; dataBase : mysql , redis ; database driver: PDO; language: PHP ;  frame : CodeIgniter ;
+#web server : nginx ; dataBase : mysql-5.5 , redis ; database driver: PDO; language: PHP-5.3 ;  frame : CodeIgniter ;
 # frame note: 
 #1丶classes:
 #the autoload class list:CI_Cache, this class object declared in the CI_Controller 

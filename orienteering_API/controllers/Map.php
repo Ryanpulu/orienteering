@@ -21,6 +21,17 @@ class Map extends CI_Controller {
         exit(1);
     }
 
+
+
+
+
+
+
+
+
+
+    //--------------------  以下是处理数据显示逻辑函数，均为私有函数，不提供web访问  -------------------------------------
+    //----------------------------------------------------  private   -------------------------------------------------------
     private function _getOneMapAssembly($mapDetail,$pointArrDetail,$mapLine){
         if( !$mapDetail OR !$pointArrDetail OR !$mapLine  ){
             i_log_message('error',__CLASS__,__FUNCTION__);

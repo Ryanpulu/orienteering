@@ -11,11 +11,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Pay_lib{
 
     /*
+     * @desc 应用当前CI
+     * @var object
+     */
+
+    public $CI;
+
+    /*
      * @desc 支付类名称定义套接字符串
      * @var string
      */
 
     const joint = '_';
+
+    /*
+     * @desc 调用支付请求函数前缀名
+     * @var string
+     */
+
+    const action_func_prefix = 'action_';
 
     /*
      * @desc 该支付类目录名称
@@ -59,6 +73,13 @@ class Pay_lib{
 
     public $extra=null;
 
+    /*
+     * @desc 支付类APP名称，默认为LeXun
+     * @var string
+     */
+
+    protected $appName;
+
     /**
      * Pay_lib constructor.
      * @param $param
@@ -67,13 +88,19 @@ class Pay_lib{
 
     public function __construct()
     {
-
+        $this->CI = & get_instance();
     }
 
-    public function action($param){
+    public function action(array $param){
         $this->_propertyAssign($param);
         $this->_third_party_model = $this->_loadThirdPartyPay();
-        var_dump($this);
+        $Conf = CI_Config::$Conf['Pay'][(string)ucfirst($this->_thirdParty)][(string)ucfirst($this->type)][(string)ucfirst($this->appName)];
+        $Conf['appName'] = $this->appName;
+        $actFuncName = self::action_func_prefix.strtolower($this->service);
+        if( ! method_exists($this->_third_party_model,$actFuncName) ){
+            throw new Exception(' the request pay method '.$actFuncName.' is not exist');
+        }
+        return  $this->_third_party_model->$actFuncName($Conf,$param);
     }
 
     /*
@@ -96,7 +123,19 @@ class Pay_lib{
      * @param bool $loadStatus
      * @return mixed
      */
+
     private function _LoadThirdPartyClass($classFilePath, $loadStatus=FALSE){
+        //检查是否有加载第三方支付抽象父类
+        if( ! class_exists($this->_thirdParty.'Pay') ){
+            $thirdFilePath = APPPATH.'libraries'.DIRECTORY_SEPARATOR.self::DIR_NAME.DIRECTORY_SEPARATOR.$this->_thirdParty.DIRECTORY_SEPARATOR.$this->_thirdParty.'Pay.php';
+            if( file_exists($thirdFilePath) ){
+                include($thirdFilePath);
+            }else{
+                i_log_message('error',__CLASS__,__FUNCTION__,0,'没有找到'.$thirdFilePath.'文件');
+                throw new Exception('the thirdPartyPay file is not exits');
+            }
+        }
+        //加载第三方支付类
         if( ! class_exists($this->_thirdParty.self::joint.$this->type) && $loadStatus===FALSE ){
             include($classFilePath);
             $loadStatus = TRUE;
@@ -116,9 +155,10 @@ class Pay_lib{
      */
 
     private function _propertyAssign($param){
-        $this->service = isset($param['service']) ? $param['service'] : null;
+        $this->service = isset($param['trade_service']) ? $param['trade_service'] : null;
         $this->_thirdParty = isset($param['thirdParty']) ? $param['thirdParty'] : null;
-        $this->type = isset($param['type']) ? $param['type'] : null;
+        $this->type = isset($param['trade_type']) ? $param['trade_type'] : null;
+        $this->appName = isset($param['appName']) ? $param['appName'] : 'LeXun';
         $this->extra = isset($param['extra']) ? $param['extra'] : null;
     }
 

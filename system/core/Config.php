@@ -405,7 +405,15 @@ class CI_Config {
     {
         $CI_Con->load->library('toml_lib');
         $toml_lib_object = $CI_Con->toml_lib;
+        $toml_conf_file_path = APPPATH.'config'.DIRECTORY_SEPARATOR.'config.toml';
+        if( ! file_exists($toml_conf_file_path) ){
+            i_log_message('error',__CLASS__,__FUNCTION__,0,'没有找到路径为：'.$toml_conf_file_path.'的toml配置文件');
+            throw new Exception('the toml file '.$toml_conf_file_path.' is not exits ');
+        }
         $Conf = $toml_lib_object::parseFile(APPPATH."/config/config.toml");
+        if( $Conf === FALSE ){
+            throw new Exception(' the toml file is Invalid ');
+        }
         return $Conf;
     }
 }

@@ -24,12 +24,18 @@ class Welcome extends CI_Controller {
         //var_dump($this->user_token_model->getUserToken(41));
         //$this->request_lib->checkReqData();
         //var_dump($this->request_lib->reqData);
-        var_dump($this);
-        $this->load->library('Pay/pay_lib');
-        $this->pay_lib->action(['service'=>'Pay','thirdParty'=>'Ali','type'=>'APP']);
+
         //$this->load->model('user_token_model');
         //print_r($this->user_token_model->getUserToken());
         //echo $this->response_msg->jsonResp(3);
         //var_dump($this->input);
 	}
+
+	/*public function testPay(){
+        $this->load->library('Pay/pay_lib');
+        //$this->request_lib->checkReqData(['activityId','']);
+        $detail = ['goods_detail'=>'测试一下','goods_name'=>'哈哈','total_amount'=>'20.00','seller_id'=>''];
+        $data = $this->pay_lib->action(['trade_service'=>'Pay','thirdParty'=>'Ali','trade_type'=>'APP'],$this->request_lib->reqData);
+        echo $this->response_msg_lib->jsonResp(0,$data);
+    }*/
 }

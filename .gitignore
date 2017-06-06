@@ -4,4 +4,5 @@
 */config/database.php
 */config/config.toml
 *project.txt
-orienteering_API/config/redis.php
+*/config/redis.php
+*/key/*
