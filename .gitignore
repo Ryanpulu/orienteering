@@ -5,4 +5,4 @@
 */config/config.toml
 *project.txt
 */config/redis.php
-*/key/*
+*/key/* 
