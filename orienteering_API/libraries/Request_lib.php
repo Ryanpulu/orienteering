@@ -58,6 +58,7 @@ class Request_lib{
         //检查page是否设定，没有则给定配置文件config.toml中的默认值
         $this->reqData['pageNumber'] = isset($this->reqData['pageNumber']) ? $this->reqData['pageNumber']  : CI_Config::$Conf["Api"]['PageNumber'];
         $this->reqData['pageSize'] = isset($this->reqData['pageSize']) ? $this->reqData['pageSize']  : CI_Config::$Conf["Api"]['PageSize'];
+        $this->reqData['pageStart'] = ($this->reqData['pageNumber'] - 1) * $this->reqData['pageSize'];
     }
 
     /**
@@ -87,6 +88,7 @@ class Request_lib{
     /**
      * @desc 检查token
      * @return bool
+     * @throws Exception
      */
     private function _checkToken(){
         if( ! isset($this->CI->user_token_model)){
@@ -94,10 +96,10 @@ class Request_lib{
         }
         $userToken = $this->CI->user_token_model->getUserToken($this->reqData['token']);
         if($userToken==false){
-            echo $this->CI->response_msg->jsonResp(3);
+            echo $this->CI->response_msg_lib->jsonResp(3);
             return false;
-        }elseif (isset($userToken->expiration_time) && $userToken->expiration_time > time()){
-            echo $this->CI->response_msg->jsonResp(4);
+        }elseif (isset($userToken->expiration_time) && time() > $userToken->expiration_time){
+            echo $this->CI->response_msg_lib->jsonResp(4);
             return false;
         }
         if( ! isset($userToken->userID) ){

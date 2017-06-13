@@ -1,11 +1,11 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
 /**
  * Created by PhpStorm.
  * User: Ryanp
  * Date: 2017/5/29
  * Time: 18:05
  */
+defined('BASEPATH') OR exit('No direct script access allowed');
 class Activity_model extends CI_Model {
 
     protected $table = "activity";
@@ -202,5 +202,23 @@ class Activity_model extends CI_Model {
         //$this->db->i_prepare(' SELECT `name`,`price`,`ownerId`,`end`,`` ');
     }
 
+    /**
+     * @desc 获取正在进行的活动Id，并计算每个活动ID进行中活动的总数
+     * @return mixed
+     */
+
+    public function getMapIdOngoing(){
+        $curTime = time();
+        $this->db->i_prepare(' SELECT `mapId` FROM `activity` WHERE `end` > :end AND `flag`=:flag AND `isPublic`=:isPublic ' );
+        $this->db->i_execute([':flag'=>0,':isPublic'=>1,':end'=>$curTime]);
+        return $this->db->i_fetchAll();
+    }
+
+    public function getLineOngoing($activityId){
+        $this->db->i_prepare('SELECT `line`,`type`,`duration` FROM `activity` WHERE `activityId`=:activityId AND `end` > :endTime AND `flag`=:flag LIMIT 1');
+        $exeArr = [':activityId'=>$activityId,':endTime'=>time(),':flag'=>0];
+        $this->db->i_execute($exeArr);
+        return $this->db->i_fetchAll();
+    }
 }
 

@@ -15,13 +15,13 @@ class Response_msg_lib{
      */
 
     private static $CodeArr = array(
-        0=>'SUCCESS',
-        3=>'token错误',
-        4=>'token过期',
-        5=>'参数缺失',
-        7=>'非法参数',
-        40003=>'您没有该操作权限',
-        50001=>'系统错误'
+        0=>'SUCCESS',               //接口调用成功
+        3=>'token错误',             //用户token错误，调用接口时传入了不存的token
+        4=>'token过期',             //用户token失去时效，需要重新登录获取新的token
+        5=>'参数缺失',              //已被废弃
+        7=>'非法参数',              //请求参数缺失，或者传入了非法参数
+        40003=>'您没有该操作权限',  //用户调用特别的接口时权限校验未通过，（通常为非法调用）
+        50001=>'系统错误'           //系统发生了逻辑错误
     );
 
     /*
@@ -69,11 +69,13 @@ class Response_msg_lib{
     }
 
     /**
-     * @param int $code
+     * @param $code
+     * @param null $data
      * @return string
      * @throws Exception
      */
-    public function jsonResp($code,$data=null){
+
+    public function jsonResp($code, $data=null){
         $headerStr = implode(';',['json'=>$this->_jsonHeader(),'charset'=>$this->_charsetHeader()]);
         if(!array_key_exists($code,self::$CodeArr)){
             throw new Exception("该code码没有被设置");

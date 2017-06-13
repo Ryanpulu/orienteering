@@ -7,7 +7,6 @@
  * Author Mail : ryanpulu@outlook.com
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
-
 class Map_line_model extends CI_Model{
     /*
      * @desc 当前类操作的数据库表名称

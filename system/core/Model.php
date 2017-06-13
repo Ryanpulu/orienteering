@@ -56,7 +56,6 @@ class CI_Model {
 	/**
 	 * Class constructor
 	 *
-	 * @return	void
 	 */
 	public function __construct()
 	{
@@ -89,11 +88,33 @@ class CI_Model {
      * @param $value
      * @throws Exception
      */
+
     public final function setNature($name, $value){
         var_dump(ucfirst($this->table.'_model'));
         if( ! property_exists(ucfirst($this->table.'_model'),$name) ){
             throw new Exception("the nature $name in the class ".__CLASS__." is not declared ");
         }
         $this->$name = $value;
+    }
+
+    /**
+     * @desc 为从数据库取出的数据建立以某个字段值为索引的数组
+     * @param array $data
+     * @param $indexName
+     * @return array
+     * @throws Exception
+     */
+
+    public final function setIndex(array $data, $indexName){
+        $newData = [];
+        foreach( $data as $value ){
+            if ( ! isset($value["$indexName"]) ){
+                continue;
+            } else {
+                $newData[$value["$indexName"]] = $value;
+            }
+        }
+        unset($data);
+        return $newData;
     }
 }

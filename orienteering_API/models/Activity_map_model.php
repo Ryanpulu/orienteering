@@ -95,6 +95,39 @@ class Activity_map_model extends CI_Model{
         return $res;
     }
 
+    /**
+     * @desc 查询所有地图信息
+     * @return mixed
+     */
 
+    public function getAllMapList(){
+        $mapData = $this->cache->redis->get( getRedisKey(__CLASS__,__FUNCTION__) );
+        if($mapData == FALSE){
+            $this->db->i_prepare('SELECT `center`,`locationName`,`mapId`,`name`,`pic` FROM `activity_map`');
+            $this->db->i_execute([]);
+            $mapData = $this->db->i_fetchAll();
+            $this->cache->redis->save( getRedisKey(__CLASS__,__FUNCTION__),$mapData );
+        }
+        return is_array($mapData) ? $this->_setMapIdIndex($mapData) : null;
+    }
+
+    /**
+     * @desc 设置地图ID为数据index键名索引mysql数据
+     * @param array $mapData
+     * @return array
+     * @throws Exception
+     */
+    private function _setMapIdIndex(array $mapData){
+        $newData = [];
+        foreach($mapData as $value){
+            if( ! isset($value['mapId']) ){
+                throw new Exception('mapId is undefined in the class:'.__CLASS__.' func: '.__FUNCTION__);
+            }else{
+                $newData[$value['mapId']] = $value;
+            }
+        }
+        unset($mapData);
+        return $newData;
+    }
 }
 

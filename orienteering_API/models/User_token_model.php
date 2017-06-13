@@ -1,5 +1,4 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
 /**
  * Created by PhpStorm.
  * User: Ryan
@@ -7,6 +6,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * Time: 17:05
  * Author Mail : ryanpulu@outlook.com
  */
+defined('BASEPATH') OR exit('No direct script access allowed');
 class User_token_model extends CI_Model {
 
     /*
