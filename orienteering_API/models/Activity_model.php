@@ -214,11 +214,18 @@ class Activity_model extends CI_Model {
         return $this->db->i_fetchAll();
     }
 
+    /**
+     * @desc 获取进行中活动的路线,同时查询该活动类型，不同活动路线格式不同
+     * @param $activityId
+     * @return stdClass
+     */
     public function getLineOngoing($activityId){
         $this->db->i_prepare('SELECT `line`,`type`,`duration` FROM `activity` WHERE `activityId`=:activityId AND `end` > :endTime AND `flag`=:flag LIMIT 1');
         $exeArr = [':activityId'=>$activityId,':endTime'=>time(),':flag'=>0];
         $this->db->i_execute($exeArr);
-        return $this->db->i_fetchAll();
+        $stdObject = $this->db->i_fetchObject();
+        return $stdObject===FALSE ? new stdClass() : $stdObject;
     }
+
 }
 

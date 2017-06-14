@@ -221,6 +221,7 @@ class CI_DB_pdo_driver extends CI_DB {
     /**
      * PDO fetchAll
      * @return mixed
+     * @param $fetchAssoc
      * @throws Exception
      */
     public function i_fetchAll($fetchAssoc=TRUE){
@@ -245,6 +246,18 @@ class CI_DB_pdo_driver extends CI_DB {
         $_data = $this->stat->fetchObject();
         $this->init_Stat();
         return $_data;
+    }
+
+    /**
+     * @desc 返回上一条sql语句影响的行数
+     * @return mixed
+     * @throws Exception
+     */
+    public function i_rowCount(){
+        if($this->stat===null){
+            throw new Exception("stat is not initialized or the stat execute is false");
+        }
+        return $this->stat->rowCount();
     }
 
     /**
@@ -287,6 +300,7 @@ class CI_DB_pdo_driver extends CI_DB {
     public function i_error_info(){
         return $this->conn_id->errorInfo();
     }
+
 
     /**
      * 获取跟数据库句柄上一次操作相关的 SQLSTATE

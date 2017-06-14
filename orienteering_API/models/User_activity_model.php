@@ -137,5 +137,105 @@ class User_activity_model extends CI_Model{
 
     private $out_trade_no;
 
+    /*
+     * @desc status可取的值
+     * @var array
+     */
+
+    private static $statusLimit = [0,1,2,3];
+
+    private static $typeLimit = [1,2,3];
+
+    /**
+     * @desc 查询用户特定活动信息
+     * @param $userId
+     * @param $activityId
+     * @return mixed
+     */
+
+    public function getUpPointDesc($userId, $activityId){
+        $this->db->i_prepare(' SELECT `attend`,`status`,`startTime`,`reach`,`score` FROM `user_activity` WHERE `userId`=:userId AND `activityId`=:activityId LIMIT 1');
+        $this->db->i_execute([':userId'=>$userId,':activityId'=>$activityId]);
+        $resObject = $this->db->i_fetchObject();
+        return $resObject === FALSE ? new stdClass() : $resObject;
+    }
+
+    /**
+     * @desc 对已经开始寻宝的活动上传点
+     * @param $userId
+     * @param $activityId
+     * @param $startTime
+     * @param $reach
+     * @param $reachTime
+     * @param $upStatus
+     * @param $curStatus
+     * @param $score
+     * @param $starTimeFlag
+     * @return bool
+     * @throws Exception
+     */
+    public function upReached($userId, $activityId, $startTime, $reach, $reachTime, $upStatus, $curStatus, $score, $starTimeFlag=FALSE){
+        if( ! in_array($upStatus,self::$statusLimit) OR ! in_array($curStatus,self::$statusLimit) ){
+            throw new Exception('the param upStatus is invalid in the className:'.__CLASS__.'-funcName:'.__FUNCTION__);
+        }
+        $elapsed = $reachTime - $startTime;
+        $exeData = [
+            'score'         =>  $score,
+            ':reach'        =>  $reach,
+            ':reachTime'    =>  $reachTime,
+            ':elapsed'      =>  $elapsed,
+            ':upStatus'     =>  $upStatus,
+            ':userId'       =>  $userId,
+            ':activityId'   =>  $activityId,
+            ':attend'       =>  1,
+            ':curStatus'    =>  $curStatus
+        ];
+        if( $starTimeFlag ){
+            $this->db->i_prepare(' UPDATE `user_activity` SET `score`=:score,`startTime`=:startTime,`reach`=:reach,`reachTime`=:reachTime,`elapsed`=:elapsed,`status`=:upStatus WHERE `userId`=:userId AND `activityId`=:activityId AND `attend`=:attend AND `status`=:curStatus LIMIT 1');
+            $exeData[':startTime'] = $startTime;
+        }else{
+            $this->db->i_prepare(' UPDATE `user_activity` SET `score`=:score,`reach`=:reach,`reachTime`=:reachTime,`elapsed`=:elapsed,`status`=:upStatus WHERE `userId`=:userId AND `activityId`=:activityId AND `attend`=:attend AND `status`=:curStatus LIMIT 1');
+        }
+        $res = $this->db->i_execute($exeData);
+        return $res && $this->db->i_rowCount()>0 ? TRUE : FALSE;
+    }
+
+    /**
+     * @desc 成功获取排名返回整数，失败则为null
+     * @param $activityId
+     * @param $userId
+     * @return int|null|string
+     */
+    public function getPersonalCurRank($activityId, $userId){
+        $this->db->i_prepare(' SELECT `userId` FROM `user_activity` WHERE `activityId`=:activityId AND `attend`=:attend ORDER BY `score` DESC,`elapsed` ASC');
+        $this->db->i_execute([':activityId'=>$activityId,':attend'=>1]);
+        $resData =  $this->db->i_fetchAll();
+        $rank = null;
+        if( ! empty($resData) ){
+            foreach ($resData as $key => $value){
+                if($value['userId'] == $userId){
+                    $rank =  $key + 1;
+                    break;
+                }
+            }
+        }
+        return $rank;
+    }
+
+    public function getIntegralCurRank($activityId, $userId){
+        $this->db->i_prepare(' SELECT `userId` FROM `user_activity` WHERE `activityId`=:activityId AND `attend`=:attend ORDER BY `score` DESC,`elapsed` ASC');
+        $this->db->i_execute([':activityId'=>$activityId,':attend'=>1]);
+        $resData =  $this->db->i_fetchAll();
+        $rank = null;
+        if( ! empty($resData) ){
+            foreach ($resData as $key => $value){
+                if($value['userId'] == $userId){
+                    $rank =  $key + 1;
+                    break;
+                }
+            }
+        }
+        return $rank;
+    }
 
 }
