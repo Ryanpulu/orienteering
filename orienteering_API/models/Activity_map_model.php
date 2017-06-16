@@ -86,7 +86,7 @@ class Activity_map_model extends CI_Model{
      */
 
     public function getMapDetail($mapId){
-        $this->db->i_prepare('SELECT `mapId`,`name`,`locationName`,`bound`,`center`,`pic` FROM `activity_map` WHERE `mapId`=:mapId LIMIT :limit');
+        $this->db->i_prepare('SELECT `mapId`,`name`,`locationName`,`bound`,`center`,`pic` FROM `activity_map` WHERE `mapId`=:mapId AND `flag`=:flag LIMIT :limit');
         $this->db->i_execute([":mapId"=>$mapId,":limit"=>1]);
         $res = $this->db->i_fetchObject();
         if( isset($res->pic) ){
@@ -101,12 +101,14 @@ class Activity_map_model extends CI_Model{
      */
 
     public function getAllMapList(){
-        $mapData = $this->cache->redis->get( getRedisKey(__CLASS__,__FUNCTION__) );
+        $update_time = strtotime( $this->getTableUpdateTime('activity_map') );  //获取数据表格最后更新时间
+        $redisKey = getRedisKey(__CLASS__,__FUNCTION__,'update_time='.$update_time);
+        $mapData = $this->cache->redis->get($redisKey);
         if($mapData == FALSE){
-            $this->db->i_prepare('SELECT `center`,`locationName`,`mapId`,`name`,`pic` FROM `activity_map`');
-            $this->db->i_execute([]);
+            $this->db->i_prepare('SELECT `center`,`locationName`,`mapId`,`name`,`pic` FROM `activity_map` WHERE `flag`=:flag');
+            $this->db->i_execute([':flag'=>0]);
             $mapData = $this->db->i_fetchAll();
-            $this->cache->redis->save( getRedisKey(__CLASS__,__FUNCTION__),$mapData );
+            $this->cache->redis->save( $redisKey,$mapData );
         }
         return is_array($mapData) ? $this->_setMapIdIndex($mapData) : null;
     }

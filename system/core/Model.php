@@ -117,4 +117,17 @@ class CI_Model {
         unset($data);
         return $newData;
     }
+
+    /**
+     * @desc 获取一个某个数据库中某个表格的下一个自增ID
+     * @param $table_name
+     * @param string $db_name
+     * @return mixed
+     */
+    public final function getTableUpdateTime($table_name, $db_name=''){
+        $db_name = $db_name=='' && isset($this->db->database) ? $this->db->database : $db_name;
+        $res = $this->db->query("SELECT `UPDATE_TIME` FROM `information_schema`.`TABLES` WHERE `information_schema`.`TABLES`.`TABLE_SCHEMA` = '$db_name' AND `information_schema`.`TABLES`.`TABLE_NAME` = '$table_name'");
+        return $res->row()->UPDATE_TIME;
+    }
+
 }
