@@ -214,7 +214,6 @@ class CI_Loader {
 		{
 			$params = NULL;
 		}
-        //echo $library;
 		$this->_ci_load_library($library, $params, $object_name);
 		return $this;
 	}

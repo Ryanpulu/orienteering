@@ -43,6 +43,12 @@ class Dynamic_praise_model extends CI_Model{
 
     private $flag;
 
+    /*
+     * @desc flag限定数组，只能是0 或者1
+     * @var array
+     */
+
+    private static $flagLimit = [0,1];
 
     /**
      * @desc 获取一个动态ID数组中的所有点赞详情
@@ -61,6 +67,51 @@ class Dynamic_praise_model extends CI_Model{
         $fieldNameArr[':flag'] = 1;
         $this->db->i_execute($fieldNameArr);
         return $this->_eachPraise($this->db->i_fetchAll());
+    }
+
+    /**
+     * @desc 获取动态详情接口中的点赞ID列表
+     * @param $dynamicId
+     * @return array
+     */
+    public function getDyDetPraise($dynamicId){
+        $this->db->i_prepare(' SELECT `dynamicId`,`userId` FROM `dynamic_praise` WHERE `dynamicId`=:dynamicId AND `flag`=:flag');
+        $this->db->i_execute([':dynamicId'=>$dynamicId,':flag'=>1]);
+        $det = $this->db->i_fetchAll();
+        return empty($det) ? [] : array_column($det,'userId');
+    }
+
+    /**
+     * @desc 检查当前用户点赞状态，若为true 则为点赞状态，否则是未点赞状态
+     * @param $dynamicId
+     * @param $userId
+     * @return bool
+     */
+    public function ckUPraiseStatus($dynamicId, $userId){
+        $this->db->i_prepare('SELECT `flag` FROM `dynamic_praise` WHERE `dynamicId`=:dynamicId AND `userId`=:userId');
+        $this->db->i_execute([':dynamicId'=>$dynamicId,':userId'=>$userId]);
+        $res = $this->db->i_fetch();
+        return isset($res['flag']) ? $res['flag'] : FALSE;
+    }
+
+    /**
+     * @desc 新增一条点赞记录
+     * @param $dynamicId
+     * @param $userId
+     * @return mixed
+     */
+    public function givePraiseNew($dynamicId, $userId){
+        $this->db->i_prepare('INSERT INTO `dynamic_praise` (`dynamicId`,`userId`,`flag`) VALUES (:dynamicId,:userId,:flag)');
+        return $this->db->i_execute([':dynamicId'=>$dynamicId,':userId'=>$userId,':flag'=>1]);
+    }
+
+    public function upPraise($dynamicId,$userId,$upStatus){
+        if ( ! in_array($upStatus,self::$flagLimit) ){
+            throw new Exception('the param upStatus is invalid in the func:'.__FUNCTION__.'-class:'.__CLASS__);
+        }
+        $this->db->i_prepare('UPDATE `dynamic_praise` SET `flag`=:flag WHERE `dynamicId`=:dynamicId AND `userId`=:userId LIMIT 1');
+        $res = $this->db->i_execute([':flag'=>$upStatus,':dynamicId'=>$dynamicId,':userId'=>$userId]);
+        return $res && $this->db->i_rowCount() ? TRUE : FALSE;
     }
 
     /**

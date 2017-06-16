@@ -178,7 +178,7 @@ class User_activity_model extends CI_Model{
         if( ! in_array($upStatus,self::$statusLimit) OR ! in_array($curStatus,self::$statusLimit) ){
             throw new Exception('the param upStatus is invalid in the className:'.__CLASS__.'-funcName:'.__FUNCTION__);
         }
-        $elapsed = $reachTime - $startTime;
+        $elapsed = $reachTime - $this->getStartTime($activityId,$userId);
         $exeData = [
             'score'         =>  $score,
             ':reach'        =>  $reach,
@@ -198,6 +198,24 @@ class User_activity_model extends CI_Model{
         }
         $res = $this->db->i_execute($exeData);
         return $res && $this->db->i_rowCount()>0 ? TRUE : FALSE;
+    }
+
+    /**
+     * @desc 获取用户开始活动的开始时间
+     * @param $activityId
+     * @param $userId
+     * @return mixed
+     * @throws Exception
+     */
+    public function getStartTime($activityId, $userId){
+        $this->db->i_prepare('SELECT `startTime`,`userId` FROM `user_activity` WHERE `userId`=:userId AND `activityId`=:activityId LIMIT 1');
+        $this->db->i_execute([':userId'=>$userId,':activityId'=>$activityId]);
+        $res = $this->db->i_fetch();
+        if( empty($res) ){
+            i_log_message('error',__CLASS__,__FUNCTION__,$userId,'没有找到该用户参与的活动');
+            throw new Exception('error class:'.__CLASS__.'-func:'.__FUNCTION__);
+        }
+        return $res['startTime'];
     }
 
     /**

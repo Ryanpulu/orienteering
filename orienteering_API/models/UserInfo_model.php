@@ -171,24 +171,61 @@ class UserInfo_model extends CI_Model{
 
     /**
      * @param array $userIdArr
-     * @param array $fieldArr
      * @return array
      */
 
-    public function getInfoFromIdArr(array $userIdArr, array $fieldArr=['userId']){
-        $fieldStr = '`userId`,`'.implode('`,`',$fieldArr).'`';
+    public function getDyListUserInfo(array $userIdArr){
         foreach( $userIdArr as $value ){
             $fieldNameArr[':userId'.$value] = $value;
         }
         if( ! isset($fieldNameArr) ){
             return [];
         }
-        $this->db->i_prepare(' SELECT '.$fieldStr.' FROM `userInfo` WHERE `userId` in('.implode(',',array_keys($fieldNameArr) ).') ');
+        $this->db->i_prepare(' SELECT `userId`,`nickname`,`headIcon` FROM `userInfo` WHERE `userId` in('.implode(',',array_keys($fieldNameArr) ).') ');
         $this->db->i_execute($fieldNameArr);
         $data =  $this->setIndex($this->db->i_fetchAll(),'userId');
         return $this->_eachHdIcon($data);
     }
 
+    public function getDyDetPraiseInfo(array $userIdArr){
+        foreach( $userIdArr as $value ){
+            $fieldNameArr[':userId'.$value] = $value;
+        }
+        if( ! isset($fieldNameArr) ){
+            return [];
+        }
+        $this->db->i_prepare('SELECT `userId`,`nickname` FROM `userinfo` WHERE `userId` in('.implode(',',array_keys($fieldNameArr)).') ');
+        $this->db->i_execute($fieldNameArr);
+        return $this->db->i_fetchAll();
+    }
+
+    /**
+     * @desc 获取单个动态详情中所有者信息
+     * @param $userId
+     * @return mixed
+     */
+    public function getDyDetUserInfo($userId){
+        $this->db->i_prepare(' SELECT `userId`,`nickname`,`headIcon` FROM `userInfo` WHERE `userId` = :userId LIMIT 1 ');
+        $this->db->i_execute([':userId'=>$userId]);
+        $det = $this->db->i_fetch();
+        if( isset($det['headIcon']) ){
+            $det['headIcon'] = $this->_hdIconAssembly($det['headIcon']);
+        }
+        return $det;
+    }
+
+    public function getDyDetWriterInfo(array $userIdArr){
+        foreach( $userIdArr as $value ){
+            $fieldNameArr[':userId'.$value] = $value;
+        }
+        if( ! isset($fieldNameArr) ){
+            return [];
+        }
+        $this->db->i_prepare('SELECT `userId`,`nickname`,`headIcon` FROM `userinfo` WHERE `userId` in('.implode(',',array_keys($fieldNameArr)).') ');
+        $this->db->i_execute($fieldNameArr);
+        $res =  $this->db->i_fetchAll();
+        return empty($res) ? [] : $this->setIndex($this->_eachHdIcon($res),'userId');
+    }
 
     /**
      * @param array $data

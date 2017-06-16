@@ -38,12 +38,21 @@ class Request_lib{
         $this->CI = & get_instance();
     }
 
+    /**
+     * @desc 检查数据是否合法
+     * @param array|null $ckDataFiled
+     */
     public final function checkReqData(array $ckDataFiled=null){
         $_req_method = $this->CI->input->method();
         $_req_data = $_req_method == 'post' ? $this->CI->input->post() : null;
         $_req_data = $_req_method == 'get' ? $this->CI->input->get() : $_req_data;
         $this->reqData = $_req_data;
         $this->ckDataFiled = $ckDataFiled;
+        //当需要token，客户端没有上传时，返回token错误
+        if( is_array($this->ckDataFiled) && in_array('token',$this->ckDataFiled) && ! isset($this->reqData['token']) ){
+            echo $this->CI->response_msg_lib->jsonResp(3);
+            exit(0);
+        }
         if( ! $this->_ckReqDataRational() ){
             if( ! isset($this->CI->response_msg_lib)){
                 $this->CI->load->library('response_msg_lib');
@@ -55,6 +64,8 @@ class Request_lib{
         if(isset($this->reqData['token']) && ! $this->_checkToken() ){
             die();
         }
+        $this->_trimData($this->reqData);
+        //对传入的数据进行trim操作
         //检查page是否设定，没有则给定配置文件config.toml中的默认值
         $this->reqData['pageNumber'] = isset($this->reqData['pageNumber']) ? $this->reqData['pageNumber']  : CI_Config::$Conf["Api"]['PageNumber'];
         $this->reqData['pageSize'] = isset($this->reqData['pageSize']) ? $this->reqData['pageSize']  : CI_Config::$Conf["Api"]['PageSize'];
@@ -83,6 +94,19 @@ class Request_lib{
             }
         }
         return true;
+    }
+
+    /**
+     * @desc 对请求数据进行trim操作
+     * @param $data
+     */
+    private function _trimData(& $data){
+        if (is_array($data)){
+            foreach ($data as & $value){
+                $value = trim($value);
+            }
+            array_filter($data);    //删除为空的无效字段
+        }
     }
 
     /**

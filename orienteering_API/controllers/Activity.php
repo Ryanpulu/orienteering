@@ -33,7 +33,6 @@ class Activity extends CI_Controller{
 
 
 
-
     //--------------------  以下是处理数据显示逻辑函数，均为私有函数，不提供web访问  -------------------------------------
     //----------------------------------------------------  private   -------------------------------------------------------
 
@@ -98,7 +97,7 @@ class Activity extends CI_Controller{
                 exit(0);
             }
             //reach 为空则表示，第一次上传点，开始寻宝
-            $upStatus = in_array($lineArr[count($lineArr)-1],$upPoint) ? 2 : 1;     //终点在上传点数组中则更新status 为 2 否则 为 1；
+            $upStatus = isset($upPoint['pointArr']) && is_array($upPoint['pointArr']) && in_array($lineArr[count($lineArr)-1],$upPoint['pointArr']) ? 2 : 1;     //终点在上传点数组中则更新status 为 2 否则 为 1；
             $upReach = implode(',',$upPoint['pointArr']);
             $reach = empty($data['userActivityDesc']['reach']) ? $upReach : implode(',',$reachedArr).','.$upReach;
             $curStatus = empty($data['userActivityDesc']['reach']) ? 0 : 1;
@@ -117,7 +116,7 @@ class Activity extends CI_Controller{
             echo $this->response_msg_lib->jsonResp(50001);
             exit(0);
         }
-        return ['rank'=>$rank];
+        return ["rank"=>$rank];
     }
 
     /**
@@ -131,7 +130,8 @@ class Activity extends CI_Controller{
         $upPoint = $this->_getIntegrationUpPoint($lineArr,$reachedArr,$data['pointTime']);
         if( ! empty($upPoint) ){
             //reach 为空则表示，第一次上传点，开始寻宝
-            $upStatus = in_array($lineArr[count($lineArr)-1],$upPoint) ? 2 : 1;     //终点在上传点数组中则更新status 为 2 否则 为 1；
+            $checkPointEnd = array_diff(array_diff($lineArr,(array)$reachedArr),$upPoint['pointArr']);
+            $upStatus = empty($checkPointEnd) && isset($upPoint['pointArr']) && ! empty($upPoint['pointArr']) ? 2 : 1;     //终点在上传点数组中则更新status 为 2 否则 为 1；
             $upReach = implode(',',$upPoint['pointArr']);
             $reach = empty($data['userActivityDesc']['reach']) ? $upReach : implode(',',$reachedArr).','.$upReach;
             $curStatus = empty($data['userActivityDesc']['reach']) ? 0 : 1;
@@ -152,7 +152,11 @@ class Activity extends CI_Controller{
         }
         return ['rank'=>$rank];
     }
-    
+
+    /**
+     * @desc 团体赛
+     * @param $data
+     */
     private function _teamUpPoint($data){
         echo $this->response_msg_lib->jsonResp(40009);
         exit(0);
@@ -170,10 +174,10 @@ class Activity extends CI_Controller{
         foreach ($unReach as $unReachPoint){
             $flag = FALSE;
             foreach($pointTimeArr as $pointTime){
-                if( isset($pointTime[0]) && isset($pointTime[1]) && (integer)$pointTime[0] == $unReachPoint ){
-                    $upPointArr[] = $pointTime[0];
-                    $starTime = isset($starTime) && $starTime != null ? $starTime : $pointTime[1];
-                    $reachTime = $pointTime[1];
+                if( isset($pointTime[0]) && isset($pointTime[1]) && (integer)$pointTime[1] == $unReachPoint ){
+                    $upPointArr[] = $pointTime[1];
+                    $starTime = isset($starTime) && $starTime != null ? $starTime : $pointTime[0];
+                    $reachTime = $pointTime[0];
                     $flag = TRUE;
                     break;
                 }
@@ -196,15 +200,15 @@ class Activity extends CI_Controller{
     private function _getIntegrationUpPoint(array $line, array $reach, array $pointTimeArr){
         $unReach = array_diff($line,$reach);
         foreach($pointTimeArr as $pointDetail){
-            if( isset($pointDetail[0]) && isset($pointDetail[1]) && in_array($pointDetail[0],$unReach) ){
+            if( isset($pointDetail[0]) && isset($pointDetail[1]) && in_array($pointDetail[1],$unReach) ){
                 if( isset($upReach[$pointDetail[0]]) ){
                     i_log_message('error',__CLASS__,__FUNCTION__,0,'传入了重复pointId的数据');
                     echo $this->response_msg_lib->jsonResp(30003);
                     exit(0);
                 }
-                $upReachOne['pointId'] = $pointDetail[0];
-                $upReachOne['reachTime'] = $pointDetail[1];
-                $upReach[$pointDetail[0]] = $upReachOne;
+                $upReachOne['pointId'] = $pointDetail[1];
+                $upReachOne['reachTime'] = $pointDetail[0];
+                $upReach[$pointDetail[1]] = $upReachOne;
             }
         }
         if ( isset($upReach) && array_multisort(array_column($upReach,'reachTime'),SORT_ASC,$upReach) ){

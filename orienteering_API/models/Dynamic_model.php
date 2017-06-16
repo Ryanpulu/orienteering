@@ -90,6 +90,41 @@ class Dynamic_model extends CI_Model {
         return $dynamicDetail;
     }
 
+    public function getOneDetail($dynamicId){
+        $this->db->i_prepare(' SELECT `dynamicId`,`userId`,`contents`,`pic`,`picInfo`,`numberRead`,`addtime` FROM `dynamic` WHERE `dynamicId`=:dynamicId AND `flag`=:flag LIMIT 1');
+        $this->db->i_execute([':dynamicId'=>$dynamicId,':flag'=>0]);
+        $det = $this->db->i_fetch();
+        if ( isset($det['pic']) && isset($det['dynamicId']) ){
+            $det['picInfo'] = isset($det['picInfo']) ? $det['picInfo'] : null;
+            $det['pic'] = $this->_eachPic($det['pic'],$det['picInfo']);
+            $det['shareUrl'] = $this->_getShareUrl($det['dynamicId']);
+            unset($det['picInfo']);
+        }
+        return $det;
+    }
+
+    /**
+     * @desc 发布一条动态
+     * @param $userId
+     * @param $contents
+     * @param $pic
+     * @param $picInfo
+     * @return mixed
+     */
+    public function publish($userId, $contents, $pic, $picInfo){
+        $this->db->i_prepare('INSERT INTO `dynamic` (`userId`,`contents`,`pic`,`picInfo`,`numberRead`,`addtime`,`flag`) VALUES (:userId,:contents,:pic,:picInfo,:numberRead,:addtime,:flag)');
+        $exeData = [
+            ':userId'       =>  $userId,
+            ':contents'     =>  $contents,
+            ':pic'          =>  $pic,
+            ':picInfo'      =>  $picInfo,
+            ':numberRead'   =>  0,
+            ':addtime'      =>  time(),
+            ':flag'         =>  0
+        ];
+        return $this->db->i_execute($exeData);
+    }
+
     /**
      * @param $pic
      * @param $picInfo

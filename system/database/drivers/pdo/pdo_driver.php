@@ -233,6 +233,15 @@ class CI_DB_pdo_driver extends CI_DB {
         return $_data;
     }
 
+    public function i_fetch($fetchAssoc=TRUE){
+        if($this->stat === null){
+            throw new Exception("stat is not initialized or the stat execute is false");
+        }
+        $_data = $fetchAssoc ? $this->stat->fetch(PDO::FETCH_ASSOC) : $this->stat->fetch();
+        $this->init_stat();
+        return $_data;
+    }
+
 
     /**
      * PDO fetchObject
@@ -298,7 +307,7 @@ class CI_DB_pdo_driver extends CI_DB {
      */
 
     public function i_error_info(){
-        return $this->conn_id->errorInfo();
+        return json_encode($this->conn_id->errorInfo());
     }
 
 

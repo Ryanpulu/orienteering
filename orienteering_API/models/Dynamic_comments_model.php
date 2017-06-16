@@ -62,6 +62,7 @@ class Dynamic_comments_model extends CI_Model{
 
     private $flag;
 
+    const COMMENT_MAX_NUMBER = 10;
     /**
      * @desc 计算指定动态Id评论总数
      * @param array $dynamicIdArr
@@ -82,5 +83,28 @@ class Dynamic_comments_model extends CI_Model{
         return $this->db->i_fetchAll();
     }
 
+    /**
+     * @desc 获取指定动态ID的所有评论,默认只显示第一条到该模型设定的最大数
+     * @param $dynamicId
+     * @return array
+     */
+    public function getDyDetComments($dynamicId){
+        $this->db->i_prepare(' SELECT `commentsId`,`writerId`,`contents`,`comment_time` FROM `dynamic_comments` WHERE `dynamicId`=:dynamicId AND `flag`=:flag ORDER BY `comment_time` DESC LIMIT 0,'.self::COMMENT_MAX_NUMBER);
+        $this->db->i_execute([':dynamicId'=>$dynamicId,':flag'=>0]);
+        $det = $this->db->i_fetchAll();
+        return $det;
+    }
+
+    /**
+     * @desc 计算评论总数
+     * @param $dynamicId
+     * @return int
+     */
+    public function mathCommentNum($dynamicId){
+        $this->db->i_prepare('SELECT count(*) as `commentsNum` FROM `dynamic_comments` WHERE `dynamicId`=:dynamicId AND `flag`=:flag');
+        $this->db->i_execute([':dynamicId'=>$dynamicId,':flag'=>0]);
+        $res = $this->db->i_fetch();
+        return ! empty($res) && isset($res['commentsNum']) ? $res['commentsNum'] : 0;
+    }
 
 }
